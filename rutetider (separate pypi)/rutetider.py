@@ -90,18 +90,20 @@ class Subscribers(Components):
 
     def create_subscribers(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS subscribers (id serial PRIMARY KEY, user_id text, \
-                                                                     date_time text);")
+                                                                     group_name text);")
         self.connection.commit()
 
     def clear_subscribers(self):
         self.cursor.execute("DELETE FROM subscribers;")
         self.connection.commit()
 
-    def add_subscriber(self, user_id, date_time):
-        self.unsubscribe(user_id)
-        self.cursor.execute("INSERT INTO subscribers (user_id, date_time) VALUES \
-                                                     (%s, %s)", (user_id, date_time))
+    def add_subscriber(self, user_id, group_name):
+        self.cursor.execute("INSERT INTO subscribers (user_id, group_name) VALUES (%s, %s)", (user_id, group_name))
         self.connection.commit()
+
+    def get_subscriber_group(self, user_id):
+        self.cursor.execute("SELECT * FROM subscribers WHERE user_id=%s", (user_id, ))
+        return self.cursor.fetchone()[2]
 
     def is_subscriber(self, user_id):
         self.cursor.execute("SELECT * FROM subscribers WHERE user_id=%s", (user_id, ))
@@ -109,7 +111,6 @@ class Subscribers(Components):
 
     def unsubscribe(self, user_id):
         self.cursor.execute("DELETE FROM subscribers WHERE user_id=%s", (user_id, ))
-        self.connection.commit()
 
 
 class CurrentDates(Components):
@@ -141,22 +142,78 @@ class UserPosition(Components):
 
     def create_user_position(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS user_position (id serial PRIMARY KEY, user_id text, \
-                                                                       position text, date_time text);")
+                            faculty text, course text, group_name text);")
         self.connection.commit()
 
     def clear_user_position(self):
         self.cursor.execute("DELETE FROM user_position;")
         self.connection.commit()
 
-    def add_position(self, user_id, position, date_time):
-        self.cursor.execute("DELETE FROM user_position WHERE user_id = %s", (user_id,))
-        self.cursor.execute("INSERT INTO user_position (user_id, position, date_time) VALUES \
-                                                       (%s, %s, %s)", (user_id, position, date_time))
+    def clear_user_data(self, user_id):
+        self.cursor.execute("DELETE FROM user_position WHERE user_id = %s", (user_id, ))
         self.connection.commit()
 
-    def get_position(self, user_id):
-        self.cursor.execute("SELECT position FROM user_position WHERE user_id=%s", (user_id, ))
+    def set_getting_position(self, user_id):
+        self.cursor.execute("INSERT INTO user_position (user_id, faculty, course, group_name) VALUES \
+                            (%s, %s, %s, %s)", (user_id, 'empty', 'empty', 'empty'))
+        self.connection.commit()
+
+    def set_faculty_position(self, user_id, faculty):
+        self.cursor.execute("UPDATE user_position SET faculty = (%s) WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s)) AND course = (%s) AND group_name = (%s)",
+                            (faculty, user_id, 'empty', 'empty'))
+        self.connection.commit()
+
+    def set_course_position(self, user_id, course):
+        self.cursor.execute("UPDATE user_position SET course = (%s) WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s)) AND group_name = (%s)",
+                            (course, user_id, 'empty'))
+        self.connection.commit()
+
+    def set_group_position(self, user_id, group_name):
+        self.cursor.execute("UPDATE user_position SET group_name = (%s) WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s)) AND group_name = (%s)",
+                            (group_name, user_id, 'empty'))
+        self.connection.commit()
+
+    def get_faculty_and_group(self, user_id):
+        self.cursor.execute("SELECT * FROM user_position WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s))",
+                            (user_id, ))
+        return tuple([element for index, element in enumerate(self.cursor.fetchone()) if index == 2 or index == 3])
+
+    def verification(self, user_id):
+        self.cursor.execute("SELECT group_name FROM user_position WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s))", (user_id, ))
         return self.cursor.fetchone()[0]
+
+    def cancel_getting_started(self, user_id):
+        self.cursor.execute("DELETE FROM user_position WHERE user_id=%s", (user_id,))
+        self.connection.commit()
+
+    def cancel_faculty(self, user_id):
+        self.cursor.execute("UPDATE user_position SET faculty = (%s) WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s))", ('empty', user_id))
+        self.connection.commit()
+
+    def cancel_course(self, user_id):
+        self.cursor.execute("UPDATE user_position SET course = (%s) WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s) AND faculty != (%s))", ('empty', user_id, 'empty'))
+        self.connection.commit()
+
+    def cancel_group(self, user_id):
+        self.cursor.execute("UPDATE user_position SET group_name = (%s) WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s) AND faculty != (%s))", ('empty', user_id, 'empty'))
+        self.connection.commit()
+
+    def back_keyboard(self, user_id):
+        self.cursor.execute("SELECT * FROM user_position WHERE id IN (SELECT max(id) FROM user_position \
+                            WHERE user_id = (%s))", (user_id, ))
+        count = -1
+        for index, field in enumerate(self.cursor.fetchone()):
+            if field != 'empty':
+                count += 1
+        return count
 
 
 class EstimateStatistics:
