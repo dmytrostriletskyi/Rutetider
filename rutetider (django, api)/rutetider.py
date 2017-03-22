@@ -29,8 +29,8 @@ class Timetable:
 
     def create_timetable(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS timetable (id serial PRIMARY KEY, faculty text, course text, \
-                                        group_name text, lesson_date text, lesson_title text, lesson_classroom text, \
-                                        lesson_order text, lesson_teacher text);")
+                            group_name text, lesson_date text, lesson_title text, lesson_classroom text, \
+                            lesson_order text, lesson_teacher text);")
         self.connection.commit()
 
     def clear_timetable(self):
@@ -40,9 +40,9 @@ class Timetable:
     def add_lesson(self, faculty, course, group_name, lesson_date,
                    lesson_title, lesson_classroom, lesson_order, lesson_teacher):
         self.cursor.execute("INSERT INTO timetable (faculty, course, group_name, \
-                    lesson_date, lesson_title, lesson_classroom, lesson_order, lesson_teacher) VALUES \
-                    (%s, %s, %s, %s, %s, %s, %s, %s)", (faculty, course, group_name, lesson_date, lesson_title,
-                                                        lesson_classroom, lesson_order, lesson_teacher))
+                            lesson_date, lesson_title, lesson_classroom, lesson_order, lesson_teacher) VALUES \
+                            (%s, %s, %s, %s, %s, %s, %s, %s)", (faculty, course, group_name, lesson_date, lesson_title,
+                                                                lesson_classroom, lesson_order, lesson_teacher))
 
         self.connection.commit()
 
@@ -121,7 +121,7 @@ class CurrentDates(Components):
 
     def create_current_dates(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS current_dates (id serial PRIMARY KEY, \
-                                                                           today text, tomorrow text);")
+                                                                       today text, tomorrow text);")
         self.connection.commit()
 
     def clear_current_dates(self):
@@ -134,7 +134,7 @@ class CurrentDates(Components):
 
     def get_dates(self):
         self.cursor.execute("SELECT today, tomorrow FROM current_dates WHERE id IN (SELECT max(id) \
-                                                                                 FROM current_dates);")
+                            FROM current_dates);")
         return self.cursor.fetchone()
 
 
@@ -168,20 +168,17 @@ class UserPosition(Components):
 
     def set_course_position(self, user_id, course):
         self.cursor.execute("UPDATE user_position SET course = (%s) WHERE id IN (SELECT max(id) FROM user_position \
-                            WHERE user_id = (%s)) AND group_name = (%s)",
-                            (course, user_id, 'empty'))
+                            WHERE user_id = (%s)) AND group_name = (%s)", (course, user_id, 'empty'))
         self.connection.commit()
 
     def set_group_position(self, user_id, group_name):
         self.cursor.execute("UPDATE user_position SET group_name = (%s) WHERE id IN (SELECT max(id) FROM user_position \
-                            WHERE user_id = (%s)) AND group_name = (%s)",
-                            (group_name, user_id, 'empty'))
+                            WHERE user_id = (%s)) AND group_name = (%s)", (group_name, user_id, 'empty'))
         self.connection.commit()
 
     def get_faculty_and_group(self, user_id):
         self.cursor.execute("SELECT * FROM user_position WHERE id IN (SELECT max(id) FROM user_position \
-                            WHERE user_id = (%s))",
-                            (user_id, ))
+                            WHERE user_id = (%s))", (user_id, ))
         return tuple([element for index, element in enumerate(self.cursor.fetchone()) if index == 2 or index == 3])
 
     def verification(self, user_id):
@@ -277,7 +274,7 @@ class Statistics(Components):
 
     def create_statistics(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS statistics (id serial PRIMARY KEY, user_id text, \
-                                                                   point text, date date);")
+                                                                    point text, date date);")
         self.connection.commit()
 
     def clear_statistics(self):
@@ -286,7 +283,7 @@ class Statistics(Components):
 
     def add_statistics(self, user_id, point, date):
         self.cursor.execute("INSERT INTO statistics (user_id, point, date) VALUES \
-                                                   (%s, %s, %s)", (user_id, point, date))
+                            (%s, %s, %s)", (user_id, point, date))
         self.connection.commit()
 
     def get_statistics_general(self):

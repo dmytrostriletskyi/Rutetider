@@ -145,8 +145,21 @@ class AddSubscriber(APIView):
         database_url = request.data['url']
         subscriber = Subscribers(database_url)
         if subscriber:
-            subscriber.add_subscriber(request.data['user_id'], request.data['date_time'])
+            subscriber.add_subscriber(request.data['user_id'], request.data['group_name'])
             return JsonResponse({'Response': 'Subscribers data was successfully added.'}, status=200)
+
+
+class GetSubscriberGroup(APIView):
+    @staticmethod
+    def post(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+        database_url = request.data['url']
+        subscriber = Subscribers(database_url)
+        if subscriber:
+            return JsonResponse({'group': subscriber.get_subscriber_group(request.data['user_id'])}, status=200)
+        else:
+            return JsonResponse({'group': subscriber.get_subscriber_group(request.data['user_id'])}, status=400)
 
 
 class IsSubscriber(APIView):
@@ -274,7 +287,21 @@ class ClearUserPosition(APIView):
             return JsonResponse({'Response': 'UserPosition application creation has been failed.'}, status=400)
 
 
-class AddPosition(APIView):
+class ClearUserData(APIView):
+    @staticmethod
+    def delete(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.clear_user_data(request.data['user_id'])
+            return JsonResponse({
+                'Response': 'User data has been cleared from table \'user_position\' in database.'}, status=200)
+
+
+class SetGettingPosition(APIView):
     @staticmethod
     def put(request):
         if is_url_out(request.data, 'url'):
@@ -283,11 +310,50 @@ class AddPosition(APIView):
         database_url = request.data['url']
         position = UserPosition(database_url)
         if position:
-            position.add_position(request.data['user_id'], request.data['position'], request.data['date_time'])
-            return JsonResponse({'Response': 'Position wars successfully added.'}, status=200)
+            position.set_getting_position(request.data['user_id'])
+            return JsonResponse({'Response': 'Start position was successfully added.'}, status=200)
 
 
-class GetPosition(APIView):
+class SetFacultyPosition(APIView):
+    @staticmethod
+    def put(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.set_faculty_position(request.data['user_id'], request.data['faculty'])
+            return JsonResponse({'Response': 'Faculty position was successfully added.'}, status=200)
+
+
+class SetCoursePosition(APIView):
+    @staticmethod
+    def put(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.set_course_position(request.data['user_id'], request.data['course'])
+            return JsonResponse({'Response': 'Course position was successfully added.'}, status=200)
+
+
+class SetGroupPosition(APIView):
+    @staticmethod
+    def put(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.set_group_position(request.data['user_id'], request.data['group_name'])
+            return JsonResponse({'Response': 'Group position was successfully added.'}, status=200)
+
+
+class GetFacultyAndGroup(APIView):
     @staticmethod
     def post(request):
         if is_url_out(request.data, 'url'):
@@ -296,7 +362,90 @@ class GetPosition(APIView):
         database_url = request.data['url']
         position = UserPosition(database_url)
         if position:
-            return JsonResponse({'dates': position.get_position(request.data['user_id'])}, status=200)
+            return JsonResponse({'Response': position.get_faculty_and_group(request.data['user_id'])}, status=200)
+
+
+class Verification(APIView):
+    @staticmethod
+    def post(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            return JsonResponse({'group': position.verification(request.data['user_id'])}, status=200)
+
+
+class CancelGettingStarted(APIView):
+    @staticmethod
+    def delete(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.cancel_getting_started(request.data['user_id'])
+            return JsonResponse({
+                'Response': 'Start position has been cleared from table \'user_position\' in database.'}, status=200)
+
+
+class CancelFaculty(APIView):
+    @staticmethod
+    def put(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.cancel_faculty(request.data['user_id'])
+            return JsonResponse({
+                'Response': 'Faculty position has been cleared from table \'user_position\' in database.'}, status=200)
+
+
+class CancelCourse(APIView):
+    @staticmethod
+    def put(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.cancel_course(request.data['user_id'])
+            return JsonResponse({
+                'Response': 'Course position has been cleared from table \'user_position\' in database.'}, status=200)
+
+
+class CancelGroup(APIView):
+    @staticmethod
+    def put(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            position.cancel_group(request.data['user_id'])
+            return JsonResponse({
+                'Response': 'Group position has been cleared from table \'user_position\' in database.'}, status=200)
+
+
+class BackKeyboard(APIView):
+    @staticmethod
+    def post(request):
+        if is_url_out(request.data, 'url'):
+            return JsonResponse({'Response': 'Database parameter URL in request data not found.'}, status=400)
+
+        database_url = request.data['url']
+        position = UserPosition(database_url)
+        if position:
+            try:
+                return JsonResponse({'keyboard': position.back_keyboard(request.data['user_id'])}, status=200)
+            except TypeError:
+                return JsonResponse({'Response': 'User has no data in database'}, status=200)
 
 
 # Statistic

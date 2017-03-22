@@ -1,7 +1,11 @@
-from django.conf.urls import url
+from django.views.generic import RedirectView
 from frameworkrequests import views
+from django.conf.urls import url
+
 
 urlpatterns = [
+
+    url(r'^$', RedirectView.as_view(url='https://github.com/DmytryiStriletskyi/Rutetider/wiki')),
 
     # Rutetider
     url(r'^timetable/$', views.TimetableApplication.as_view()),
@@ -15,6 +19,7 @@ urlpatterns = [
     url(r'^statistic/$', views.SubscribersApplication.as_view()),
     url(r'^statistic/clear_subscribers', views.ClearSubscribers.as_view()),
     url(r'^statistic/add_subscriber', views.AddSubscriber.as_view()),
+    url(r'^statistic/get_subscriber_group', views.GetSubscriberGroup.as_view()),
     url(r'^statistic/is_subscriber', views.IsSubscriber.as_view()),
     url(r'^statistic/unsubscribe', views.UnSubscribe.as_view()),
 
@@ -27,8 +32,18 @@ urlpatterns = [
     # UserPosition
     url(r'^userposition/$', views.UserPositionApplication.as_view()),
     url(r'^userposition/clear_user_position', views.ClearUserPosition.as_view()),
-    url(r'^userposition/add_position', views.AddPosition.as_view()),
-    url(r'^userposition/get_position', views.GetPosition.as_view()),
+    url(r'^userposition/clear_user_data', views.ClearUserData.as_view()),
+    url(r'^userposition/set_getting_position', views.SetGettingPosition.as_view()),
+    url(r'^userposition/set_faculty_position', views.SetFacultyPosition.as_view()),
+    url(r'^userposition/set_course_position', views.SetCoursePosition.as_view()),
+    url(r'^userposition/set_group_position', views.SetGroupPosition.as_view()),
+    url(r'^userposition/get_faculty_and_group', views.GetFacultyAndGroup.as_view()),
+    url(r'^userposition/verification', views.Verification.as_view()),
+    url(r'^userposition/cancel_getting_started', views.CancelGettingStarted.as_view()),
+    url(r'^userposition/cancel_faculty', views.CancelFaculty.as_view()),
+    url(r'^userposition/cancel_course', views.CancelCourse.as_view()),
+    url(r'^userposition/cancel_group', views.CancelGroup.as_view()),
+    url(r'^userposition/back_keyboard', views.BackKeyboard.as_view()),
 
     # Statistic
     url(r'^statistics/$', views.StatisticsApplication.as_view()),
