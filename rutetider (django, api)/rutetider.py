@@ -176,7 +176,7 @@ class UserPosition(Components):
                             WHERE user_id = (%s)) AND group_name = (%s)", (group_name, user_id, 'empty'))
         self.connection.commit()
 
-    def get_faculty_and_group(self, user_id):
+    def get_faculty_and_course(self, user_id):
         self.cursor.execute("SELECT * FROM user_position WHERE id IN (SELECT max(id) FROM user_position \
                             WHERE user_id = (%s))", (user_id, ))
         return tuple([element for index, element in enumerate(self.cursor.fetchone()) if index == 2 or index == 3])
