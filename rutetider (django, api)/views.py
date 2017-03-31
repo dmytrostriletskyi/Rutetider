@@ -353,7 +353,7 @@ class SetGroupPosition(APIView):
             return JsonResponse({'Response': 'Group position was successfully added.'}, status=200)
 
 
-class GetFacultyAndGroup(APIView):
+class GetFacultyAndCourse(APIView):
     @staticmethod
     def post(request):
         if is_url_out(request.data, 'url'):
