@@ -176,7 +176,7 @@ class UserPosition(Components):
                             (group_name, user_id, 'empty'))
         self.connection.commit()
 
-    def get_faculty_and_group(self, user_id):
+    def get_faculty_and_course(self, user_id):
         self.cursor.execute("SELECT * FROM user_position WHERE id IN (SELECT max(id) FROM user_position \
                             WHERE user_id = (%s))",
                             (user_id, ))
