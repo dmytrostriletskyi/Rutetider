@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^userposition/set_faculty_position', views.SetFacultyPosition.as_view()),
     url(r'^userposition/set_course_position', views.SetCoursePosition.as_view()),
     url(r'^userposition/set_group_position', views.SetGroupPosition.as_view()),
-    url(r'^userposition/get_faculty_and_group', views.GetFacultyAndGroup.as_view()),
+    url(r'^userposition/get_faculty_and_course', views.GetFacultyAndGroup.as_view()),
     url(r'^userposition/verification', views.Verification.as_view()),
     url(r'^userposition/cancel_getting_started', views.CancelGettingStarted.as_view()),
     url(r'^userposition/cancel_faculty', views.CancelFaculty.as_view()),
