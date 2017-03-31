@@ -362,7 +362,7 @@ class GetFacultyAndGroup(APIView):
         database_url = request.data['url']
         position = UserPosition(database_url)
         if position:
-            return JsonResponse({'Response': position.get_faculty_and_group(request.data['user_id'])}, status=200)
+            return JsonResponse({'Response': position.get_faculty_and_course(request.data['user_id'])}, status=200)
 
 
 class Verification(APIView):
